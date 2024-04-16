@@ -1,0 +1,9 @@
+{% extends 'mainapp/base.html' %}
+    {% block body %}
+        <h2>Загрузите API-url</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Загрузить и обработать</button>
+        </form>
+    {% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'mainapp/base.html' %}
+    {% block body %}
+        <h2>Выберите отчет, детализацию которого Вы хотите удалить</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Удалить</button>
+        </form>
+    {% endblock %}
