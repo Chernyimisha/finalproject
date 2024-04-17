@@ -20,12 +20,13 @@ class RealizationReport(models.Model):
     total = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Итого к оплате')
     currency = models.CharField(max_length=5, verbose_name='Валюта')
     company = models.ForeignKey(Company, on_delete=models.PROTECT, blank=False)
+    status = models.BooleanField(default=False, blank=False, verbose_name='Главный отчет', help_text='Статус отражения в главном отчете')
 
     class Meta:
         ordering = ["-create_dt", 'company']
 
     def __str__(self):
-        return f'{self.number}, {self.date_from}, {self.date_to} {self.company}'
+        return f'{self.number}, {self.date_from}, {self.date_to}, {self.company}, {self.status}'
 
 
 class RealizationReportDetail(models.Model):

@@ -121,6 +121,11 @@ STATICFILES_DIR = []
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+TEMPSTORAGE_URL = '/tempstorage/'
+TEMPSTORAGE_ROOT = os.path.join(BASE_DIR, 'tempstorage')
+
+GENERAL_SALES_REPORT = os.path.join(BASE_DIR, 'media', 'Вайлдберриз.XLSX')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

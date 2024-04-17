@@ -10,7 +10,7 @@ class RealizationReportUploadFileExcelForm(forms.Form):
 
     def clean_file(self):
         file = self.cleaned_data['file']
-        if os.path.splitext(file.name)[1].rfind('xl') == -1:
+        if os.path.splitext(file.name)[1].lower().rfind('xl') == -1:
             raise forms.ValidationError('Неверный формат файла. Выберите excel-файл!')
         return file
 
@@ -27,9 +27,8 @@ class MultipleFileField(forms.FileField):
     def clean(self, data, initial=None):
         single_file_clean = super().clean
         for file in data:
-            if os.path.splitext(file.name)[1].rfind('xl') == -1 and \
-                    os.path.splitext(file.name)[1].rfind('zip') == -1:
-                raise forms.ValidationError('Неверный формат файла. Выберите excel-файлы или zip-файлы!')
+            if os.path.splitext(file.name)[1].lower().rfind('zip') == -1:
+                raise forms.ValidationError('Неверный формат файла. Выберите zip-файлы!')
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
         else:
@@ -46,5 +45,11 @@ class RealizationReportDetailDelete(forms.Form):
                                                queryset=RealizationReport.objects.filter(realizationreportdetail__realizationReport__isnull=False).distinct())
 
 
+class UploadGeneralFileExcelForm(forms.Form):
+    file = forms.FileField(label="Загрузите файл Вайлдберриз.xlsx", required=False)
 
-
+    def clean_file(self):
+        file = self.cleaned_data['file']
+        if os.path.splitext(file.name)[-1].lower().rfind('xl') == -1:
+            raise forms.ValidationError('Неверный формат файла. Выберите excel-файл!')
+        return file

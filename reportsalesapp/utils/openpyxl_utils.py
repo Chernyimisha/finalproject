@@ -13,7 +13,7 @@ def open_excel_file(link: str, work_sheet=None):
     if work_sheet is None:
         sheet = f.active
     else:
-        sheet = work_sheet
+        sheet = f[work_sheet]
     return f, sheet
 
 
@@ -113,3 +113,8 @@ def parsing_realization_report_detail(file_link, realization_report):
     print('end parsing')
 
     return data
+
+
+
+
+

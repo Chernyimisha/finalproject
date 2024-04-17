@@ -27,6 +27,24 @@ def crud_detail(request):
     return render(request, 'reportsalesapp/crud_detail.html')
 
 
+def general_report(request):
+    return render(request, 'reportsalesapp/general_report.html')
+
+
+def upload_general_file_excel(request):
+    if request.method == 'POST':
+        form = forms.UploadGeneralFileExcelForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.cleaned_data['file']
+            fs = FileSystemStorage()
+            fs.save(file.name, file)
+            logger.info(f'Add general file: {file.name}.')
+            return HttpResponse(f"Главный файл: {file.name} успешно добавлен.")
+    else:
+        form = forms.UploadGeneralFileExcelForm()
+    return render(request, 'reportsalesapp/upload_file.html', {'form': form})
+
+
 def delete_realization_detail(request):
     if request.method == 'POST':
         form = forms.RealizationReportDetailDelete(request.POST)
@@ -62,8 +80,8 @@ def upload_realization_detail_excel(request):
                 if report_number in report_numbers:
                     realizationreport = RealizationReport.objects.filter(number=report_number).first()
                     if realizationreport not in realization_reports:
-                        with NamedTemporaryFile(dir=settings.MEDIA_ROOT) as tmp_zip, \
-                                NamedTemporaryFile(dir=settings.MEDIA_ROOT, mode='w+b') as tmp_xls:
+                        with NamedTemporaryFile(dir=settings.TEMPSTORAGE_ROOT) as tmp_zip, \
+                                NamedTemporaryFile(dir=settings.TEMPSTORAGE_ROOT, mode='w+b') as tmp_xls:
                             for chunk in file.chunks():
                                 tmp_zip.write(chunk)
                             with zipfile.ZipFile(tmp_zip) as zf:
@@ -115,7 +133,7 @@ def upload_realization_report_excel(request):
             company = form.cleaned_data['company']
             file_name = form.cleaned_data['file']
             report_numbers = {v for i in RealizationReport.objects.values('number') for v in i.values()}
-            with NamedTemporaryFile(dir=settings.MEDIA_ROOT) as tmp:
+            with NamedTemporaryFile(dir=settings.TEMPSTORAGE_ROOT) as tmp:
                 for chunk in form.cleaned_data['file'].chunks():
                     tmp.write(chunk)
                 reports = openpyxl_utils.parsing_realization_report(company, tmp, report_numbers)

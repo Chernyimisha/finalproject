@@ -9,5 +9,7 @@ urlpatterns = [
      path('index/crud_report/upload_realization_report_excel/', views.upload_realization_report_excel, name='upload_realization_report_excel'),
      path('index/crud_detail/upload_realization_detail_excel/', views.upload_realization_detail_excel, name='upload_realization_detail_excel'),
      path('index/crud_detail/delete_realization_detail/', views.delete_realization_detail, name='delete_realization_detail'),
+     path('index/general_report/', views.general_report, name='general_report'),
+     path('index/general_report/upload_general_file_excel/', views.upload_general_file_excel, name='upload_general_file_excel'),
 ]
 
