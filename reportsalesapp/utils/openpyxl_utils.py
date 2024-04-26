@@ -8,8 +8,8 @@ from django.core.files import File
 import datetime
 
 
-def open_excel_file(link: str, work_sheet=None):
-    f = openpyxl.load_workbook(link)
+def open_excel_file(file, work_sheet=None):
+    f = openpyxl.load_workbook(file)
     if work_sheet is None:
         sheet = f.active
     else:
@@ -27,15 +27,15 @@ def datetimefielddata(value):
     return data
 
 
-def parsing_realization_report(company, file_link, set_report_number):
-    file, sheet = open_excel_file(file_link)
+def parsing_realization_report(company, file, set_report_number):
+    file, sheet = open_excel_file(file)
     data = []
     cursor_row = 2
     cursor_cell_value = 0
 
     while cursor_cell_value is not None:
         report_number = int(sheet.cell(row=cursor_row, column=1).value)
-        if realizationreport_id not in set_report_number:
+        if report_number not in set_report_number:
             report = RealizationReport(
                 number=report_number,
                 date_from=sheet.cell(row=cursor_row, column=3).value,
@@ -69,7 +69,6 @@ def parsing_realization_report_detail(file_link, realization_report):
     cursor_row = 2
     cursor_cell_value = 0
     print('start parsing' + ' ' + str({realization_report.number}))
-
     while cursor_cell_value is not None:
         if (sheet.cell(row=cursor_row, column=11).value not in {
             'Возмещение издержек по перевозке/по складским операциям с товаром',
@@ -106,12 +105,9 @@ def parsing_realization_report_detail(file_link, realization_report):
                 acceptance=sheet.cell(row=cursor_row, column=57).value,
             )
             data.append(line)
-
         cursor_row += 1
         cursor_cell_value = sheet.cell(row=cursor_row, column=1).value
-        # print(cursor_row)
     print('end parsing')
-
     return data
 
 

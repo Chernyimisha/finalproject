@@ -1,6 +1,4 @@
-from reportsalesapp.models import RealizationReport, RealizationReportDetail
-import json
-from datetime import  date
+from reportsalesapp.models import RealizationReportDetail, RealizationReport
 
 
 def get_details_period(report: RealizationReport, **kwargs):
@@ -15,6 +13,10 @@ def get_details_period(report: RealizationReport, **kwargs):
             realizationReport=report,
             sale_dt__gte=kwargs['date_from'],
             sale_dt__lte=kwargs['date_to'])
+    elif 'fields' in kwargs:
+        query = RealizationReportDetail.objects.filter(
+            realizationReport=report,
+        ).values(*kwargs['fields'])
     else:
         query = RealizationReportDetail.objects.filter(
             realizationReport=report)

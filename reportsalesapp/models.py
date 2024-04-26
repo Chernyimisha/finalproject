@@ -3,10 +3,10 @@ from mainapp.models import Company
 
 
 class RealizationReport(models.Model):
-    number = models.PositiveBigIntegerField(verbose_name='№ отчета', help_text='Номер отчёта', blank=False, unique=True)
-    date_from = models.DateTimeField(verbose_name='Дата начала', help_text='Дата начала отчётного периода', blank=False)
-    date_to = models.DateTimeField(verbose_name='Дата конца', help_text='Дата конца отчётного периода', blank=False)
-    create_dt = models.DateTimeField(verbose_name='Дата формирования', help_text='Дата формирования отчёта', blank=False)
+    number = models.PositiveBigIntegerField(verbose_name='№ отчета', help_text='Номер отчёта', unique=True)
+    date_from = models.DateTimeField(verbose_name='Дата начала', help_text='Дата начала отчётного периода')
+    date_to = models.DateTimeField(verbose_name='Дата конца', help_text='Дата конца отчётного периода')
+    create_dt = models.DateTimeField(verbose_name='Дата формирования', help_text='Дата формирования отчёта')
     sales = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Продажа', help_text='Выручка с учетом возвратов')
     transfer_for_goods = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='К перечислению за товар', help_text='Выручка за вычетом комиссии')
     logistic = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Стоимость логистики')
@@ -19,8 +19,8 @@ class RealizationReport(models.Model):
     deduction = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Прочие удержания/выплаты')
     total = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='Итого к оплате')
     currency = models.CharField(max_length=5, verbose_name='Валюта')
-    company = models.ForeignKey(Company, on_delete=models.PROTECT, blank=False)
-    status = models.BooleanField(default=False, blank=False, verbose_name='Главный отчет', help_text='Статус отражения в главном отчете')
+    company = models.ForeignKey(Company, on_delete=models.PROTECT)
+    status = models.BooleanField(default=False, verbose_name='Главный отчет', help_text='Статус отражения в главном отчете')
 
     class Meta:
         ordering = ["-create_dt", 'company']
@@ -30,7 +30,7 @@ class RealizationReport(models.Model):
 
 
 class RealizationReportDetail(models.Model):
-    realizationReport = models.ForeignKey(RealizationReport, on_delete=models.CASCADE, blank=False)
+    realizationReport = models.ForeignKey(RealizationReport, on_delete=models.CASCADE)
     gi_id = models.PositiveIntegerField(verbose_name='Номер поставки', help_text='Номер поставки')
     subject_name = models.CharField(default='', max_length=150, verbose_name='Предмет', help_text='Предмет')
     nm_id = models.PositiveIntegerField(verbose_name='Код номенклатуры', help_text='Артикул WB')

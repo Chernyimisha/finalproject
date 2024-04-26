@@ -41,7 +41,7 @@ def control_data(data):
     return True
 
 
-def input_data_general_report(data, firstiterations=True):
+def input_data_general_report(data, firstiteration=True):
     file, sheet = open_excel_file(GENERAL_SALES_REPORT, 'Продажи_WB')
 
     def examination_articles(art1, art2):
@@ -52,29 +52,22 @@ def input_data_general_report(data, firstiterations=True):
         else:
             return False
 
-    def examination_availability_wb(availability_wb, firstiterations):
-        return availability_wb > 0 if firstiterations else True
+    def examination_availability_wb(availability_wb, firstiteration):
+        return availability_wb > 0 if firstiteration else True
 
     for item in data:
-        # print(item['nm_id'])
         cursor_row = 6
         cursor_cell_value = 1
-
         while cursor_cell_value is not None:
             article = sheet.cell(row=cursor_row, column=4).value
-            try:
-                availability_wb = map_str_to_int(sheet.cell(row=cursor_row, column=12).value) \
-                                  - map_str_to_int(sheet.cell(row=cursor_row, column=14).value)
-            except TypeError:
-                print(f"По строке {cursor_row} возникла ошибка {item['nm_id']}")
-
             count_cell = sheet.cell(row=cursor_row, column=14).value
             sales_cell = sheet.cell(row=cursor_row, column=15).value
             commission_cell = sheet.cell(row=cursor_row, column=17).value
             logistic_cell = sheet.cell(row=cursor_row, column=18).value
-
+            availability_wb = map_str_to_int(sheet.cell(row=cursor_row, column=12).value) \
+                              - map_str_to_int(sheet.cell(row=cursor_row, column=14).value)
             if examination_articles(article, item['nm_id']) and \
-                    examination_availability_wb(availability_wb, firstiterations):
+                    examination_availability_wb(availability_wb, firstiteration):
                 if item['count'] > availability_wb > 0:
                     temp_count = availability_wb
                     temp_sales = round(item['sales'] / item['count'] * temp_count, 2)
@@ -88,7 +81,6 @@ def input_data_general_report(data, firstiterations=True):
                     item['sales'] -= temp_sales
                     item['commission'] -= temp_commission
                     item['logistic'] -= temp_logistic
-
                 else:
                     input_cell(sheet, "N", cursor_row, str(count_cell), str(item['count']))
                     input_cell(sheet, "O", cursor_row, str(sales_cell), str(item['sales']))
@@ -98,8 +90,15 @@ def input_data_general_report(data, firstiterations=True):
                     item['sales'] = 0
                     item['commission'] = 0
                     item['logistic'] = 0
+                    break
             cursor_row += 1
             cursor_cell_value = sheet.cell(row=cursor_row, column=1).value
-
-    control_report(data)
     file.save(GENERAL_SALES_REPORT)
+
+# try:
+#     availability_wb = map_str_to_int(sheet.cell(row=cursor_row, column=12).value) \
+#                       - map_str_to_int(sheet.cell(row=cursor_row, column=14).value)
+# except TypeError:
+#     print(f"По строке {cursor_row} возникла ошибка {item['nm_id']}")
+
+# control_report(data)

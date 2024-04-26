@@ -73,7 +73,6 @@ def upload_realization_detail_excel(request):
             realization_reports = RealizationReport.objects.filter(realizationreportdetail__realizationReport__isnull=False).distinct()
             good_numbers = []
             bad_numbers = []
-            other_numbers = []
             for file in files:
                 lines = []
                 report_number = int(os.path.splitext(file.name)[0].split(' ')[-1].strip('№'))
@@ -90,11 +89,11 @@ def upload_realization_detail_excel(request):
                                         byte_text = zf.read(f)
                             tmp_xls.write(byte_text)
                             lines = openpyxl_utils.parsing_realization_report_detail(tmp_xls, realizationreport)
+                        batch_bulk_create_detail(lines, 999)
                         good_numbers.append(report_number)
+                        logger.info(f'File {file.name} processing successfully')
                 else:
                     bad_numbers.append(report_number)
-                batch_bulk_create_detail(lines, 999)
-                logger.info(f'File {file.name} processing successfully')
             context = {
                 'good_numbers': good_numbers,
                 'bad_numbers': bad_numbers,
@@ -131,16 +130,16 @@ def upload_realization_report_excel(request):
         form = forms.RealizationReportUploadFileExcelForm(request.POST, request.FILES)
         if form.is_valid():
             company = form.cleaned_data['company']
-            file_name = form.cleaned_data['file']
+            file = form.cleaned_data['file']
             report_numbers = {v for i in RealizationReport.objects.values('number') for v in i.values()}
             with NamedTemporaryFile(dir=settings.TEMPSTORAGE_ROOT) as tmp:
                 for chunk in form.cleaned_data['file'].chunks():
                     tmp.write(chunk)
                 reports = openpyxl_utils.parsing_realization_report(company, tmp, report_numbers)
-            logger.info(f'File {file_name} uploaded successfully')
+            logger.info(f'File {tmp.name} uploaded successfully')
             RealizationReport.objects.bulk_create(reports)
-            logger.info(f'File {file_name} processing successfully')
-            return HttpResponse(f"{file_name} успешно сохранены.")
+            logger.info(f'File {file.name} processing successfully')
+            return HttpResponse(f"{file.name} успешно сохранены.")
     else:
         form = forms.RealizationReportUploadFileExcelForm()
     return render(request, 'reportsalesapp/upload_file.html', {'form': form})
